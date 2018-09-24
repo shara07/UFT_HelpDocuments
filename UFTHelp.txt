@@ -1,0 +1,151 @@
+Read data sheet(Excel)column names.
+-----------------------------------
+
+ColNums=DataTable.GetSheet("Global").getparametercount
+
+For i=1 to ColNums
+
+ColName=DataTable.GetSheet("Global").GetParameter(i).Name
+
+print ColName
+
+Next
+
+-----------------------------------------------------------------
+Copy files.
+-----------------------------------------------------------------
+Robocopy C:\Users\ThuShar\Desktop\TestFiles C:\Users\ThuShar\Desktop\MoveFiles\ /MAXAGE:1 /XO /E
+
+
+--------------------------------------------------------------------
+How to setup email in Jenkins.
+--------------------------------------------------------------------
+Content Type: HTML(text/html)
+Default Content: ${FILE,path="Path to the file/Report.html"}
+
+---------------------------------------------------------------------
+How to create a data source - UFT
+---------------------------------------------------------------------
+
+
+Function DBConnection
+    
+    Dim objConnection
+    Dim objRecordSet
+    Dim DBQuery
+    
+    Set objConnection = CreateObject("ADODB.Connection")
+    Set objRecordSet = CreateObject("ADODB.Recordset")
+    DBQuery = "Select * from Table;"
+    
+    
+    objConnection.Open "Provider = SQLOLEDB.1; Data Source = DEV-SQL101; Initial Catalog = Grafana; User ID = XXXX; Password = XXXXX;" 
+    objRecordSet.Open DBQuery,objConnection
+ 
+    'Return the Result Set
+    Value = objRecordSet.fields.item(0)                
+    msgbox Value
+     
+    ' Release the Resources
+    objRecordSet.Close        
+    objConnection.Close        
+     
+    Set objConnection = Nothing
+    Set objRecordSet = Nothing
+
+----------------------------------------------------------------------------
+Take screen shot - UFT
+----------------------------------------------------------------------------
+Call TakeScreenShots
+Msgbox "Screen Shot Successfully taken..."
+
+Sub TakeScreenShots()
+Dim Word_Open
+Dim ImgPath
+Set WshShell = CreateObject("WScript.Shell")
+Set f1 = CreateObject("Scripting.FileSystemObject")
+ImgPath = "D:\Suresh\QTP\"
+Const wdStory = 6
+Const wdMove = 0
+Set Obj = CreateObject ("Word.Application")
+Word_Open = True
+PgName = "SURESHKUMAR.NET FORUMS"
+
+Do 
+i=i+1
+If (Browser("name:=" &amp; PgName).Page("title:=" &amp; PgName).Exist) Then
+hwnd = Browser("name:=" &amp; PgName).Object.HWND
+Window("hwnd:=" &amp; hwnd).Maximize
+Window("hwnd:=" &amp; hwnd).Activate
+Window("hwnd:=" &amp; hwnd).capturebitmap ImgPath &amp; i &amp; ".bmp", True
+End if
+If Word_Open = True Then
+Obj.Visible = True
+If Obj.Documents.Count =0 Then
+Obj.Documents.Add
+End if
+If f1.FileExists(ImgPath &amp; i &amp; ".bmp") and f1.FileExists(ImgPath &amp; i-1 &amp; ".bmp") Then
+If (CompareImages(ImgPath &amp; i &amp; ".bmp", ImgPath &amp; i-1 &amp; ".bmp") = "Same") Then
+Exit Do
+End If
+End If
+Obj.Selection.TypeParagraph()
+Obj.Selection.TypeText "Write what ever.."
+Obj.Selection.EndKey wdStory, wdMove
+Obj.Selection.TypeParagraph()
+Obj.Selection.InlineShapes.AddPicture ImgPath &amp; i &amp; ".bmp",False,True
+Obj.Selection.InsertBreak 'Type:=wdPageBreak
+WshShell.sendkeys "{PGDN}"
+End If
+Loop While(CompareImages(ImgPath &amp; i &amp; ".bmp", ImgPath &amp; i-1 &amp; ".bmp") = "NOT_same")
+Obj.ActiveDocument.SaveAs ImgPath &amp; "ScreenShots.doc"
+Set Obj = Nothing 
+Set f1 = Nothing
+End Sub
+
+---------------------------------------------------------------------------------------------------------
+UFT - Scroll & take screen shot
+-----------------------------------------------------
+'########################################################################################
+ 'This is navigate through the full page and taking individual screenshot of visible area 
+'######################################################################################## 
+Function TakeScreenshot Dim intScrolls, intScroll, strScrollPos
+Set pgApp = Browser("").Page("")
+intScrolls = Round(pgApp.RunScript("document.documentElement.scrollHeight / (screen.height)"), 2) 
+If intScrolls < 1 Then 
+intScrolls = -1 
+pgApp.RunScript "window.scrollTo(0, 0);"
+Wait 1 
+Browser("").CaptureBitmap "C:\screenshot0.png", True 
+For intScroll = 0 To intScrolls
+ If Environment.Value("Browser") = "CHROME" Then 
+    strScrollPos = "scrollY"
+ Else
+    strScrollPos = "document.documentElement.scrollTop" 
+End If
+
+ If pgApp.RunScript("document.documentElement.scrollHeight - " & strScrollPos) > pgApp.RunScript("screen.height") Then 
+    intY = pgApp.RunScript(strScrollPos & " + screen.height - 168;") pgApp.RunScript "window.scrollTo(0, " & intY & ");" 
+    Wait 1
+    Browser("").CaptureBitmap "screenshot" & (intScroll + 1) & ".png", True 
+ End If 
+Next 'To merge the images to generate full page screenshot
+Call MergeImages
+End Function
+
+-----------------------------------------------------------------------------------------------------------------------------
+Crete a list using Environment Variable.
+-----------------------------------------------------------------------------------------------------------------------------
+
+On Error Resume Next
+         If Environment.Value("value1") = Empty Then
+            Environment.Value("value1") = Environment("PolicyNumber")
+         Else
+            Environment.Value("value1") = Environment.Value("value1")&","& Environment("PolicyNumber")
+         End If
+        On Error Goto 0 
+-----------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------
+
+
+
